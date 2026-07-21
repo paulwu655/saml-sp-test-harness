@@ -1,0 +1,5 @@
+# Use Spring Security SAML2 Service Provider instead of hand-rolled OpenSAML
+
+`keyperdemobackend`'s existing SAML SP (`SAMLController.java`) is hand-rolled directly on OpenSAML 3.3.0: signature verification and message lifetime validation are present in the code but not actually wired up, and there is no IdP metadata parsing at all — the IdP SSO URL is hardcoded from a Keyper-specific path convention. Rebuilding "import IdP metadata" and correct signature/lifetime validation from scratch on raw OpenSAML would mean re-solving problems Spring Security's `spring-security-saml2-service-provider` module already solves natively (RelyingPartyRegistration built straight from imported metadata, automatic SP metadata generation, maintained signature/lifetime validation). Because this is a brand-new repo with no compatibility obligation to the old controller, we chose Spring Security SAML2 over continuing the hand-rolled approach.
+
+**Consequence**: this harness's endpoints, metadata format, and internal object model diverge from `keyperdemobackend`'s SAML implementation. Porting logic back into `keyperdemobackend` later would be a rewrite, not a copy.
