@@ -1,0 +1,6 @@
+server:
+  port: ${PORT:8080}
+
+harness:
+  base-url: ${BASE_URL:http://localhost:8080}
+  data-dir: ${DATA_DIR:/data}

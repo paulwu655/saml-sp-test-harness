@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>SAML SP Test Harness</title>
+</head>
+<body>
+<h1>SAML SP Test Harness</h1>
+
+<section>
+    <h2>SP identity</h2>
+    <p>Entity ID: <code th:text="${entityId}">entityId</code></p>
+    <p>ACS URL: <code th:text="${acsUrl}">acsUrl</code> — this also accepts IdP-initiated logins.</p>
+</section>
+
+<section>
+    <h2>SP Metadata</h2>
+    <a th:href="${spMetadataUrl}">Export SP Metadata</a>
+</section>
+</body>
+</html>

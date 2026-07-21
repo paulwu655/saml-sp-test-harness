@@ -1,0 +1,15 @@
+services:
+  saml-sp-test-harness:
+    build: .
+    ports:
+      # PORT (from .env) only controls the host-side port; the container always listens on 8080.
+      - "${PORT:-8080}:8080"
+    environment:
+      BASE_URL: "${BASE_URL:?Set BASE_URL in .env to a URL your IdP can reach back to}"
+      # DATA_DIR is intentionally not driven by .env: it must match the volume mount below.
+      DATA_DIR: "/data"
+    volumes:
+      - harness-data:/data
+
+volumes:
+  harness-data:
