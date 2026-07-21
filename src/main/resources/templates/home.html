@@ -47,5 +47,10 @@
         <button type="submit">Import</button>
     </form>
 </section>
+
+<section th:if="${currentIdp}">
+    <h2>Login Test</h2>
+    <a href="/saml2/authenticate/harness">Start Login Test</a>
+</section>
 </body>
 </html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Login Test Result</title>
+</head>
+<body>
+<h1>Login Test Result</h1>
+
+<p th:text="${result.success()} ? 'Result: success' : 'Result: failed'">Result</p>
+<p th:if="${result.failureMessage()}" th:text="${result.failureMessage()}">failure message</p>
+
+<section>
+    <h2>Validation</h2>
+    <p th:text="'Signature: ' + (${result.signatureValidation().isFailed()} ? 'fail' : (${result.signatureValidation().status().name()} == 'PASSED' ? 'pass' : 'not evaluated'))">signature</p>
+    <p th:text="'Time validity: ' + (${result.timeValidityValidation().isFailed()} ? 'fail' : (${result.timeValidityValidation().status().name()} == 'PASSED' ? 'pass' : 'not evaluated'))">time validity</p>
+</section>
+
+<section th:if="${result.success()}">
+    <h2>Identity</h2>
+    <p>NameID: <code th:text="${result.nameId()}">nameId</code></p>
+    <p th:if="${result.nameIdFormat()}">Format: <code th:text="${result.nameIdFormat()}">format</code></p>
+
+    <h2>Attributes</h2>
+    <ul>
+        <li th:each="entry : ${result.attributes()}">
+            <span th:text="${entry.key}">name</span>: <span th:text="${entry.value}">value</span>
+        </li>
+    </ul>
+</section>
+
+<section th:if="${result.rawResponseXml()}">
+    <h2>Raw Response XML</h2>
+    <details>
+        <summary>Show raw XML</summary>
+        <pre th:text="${result.rawResponseXml()}">raw xml</pre>
+    </details>
+</section>
+
+<p><a href="/">Back</a></p>
+</body>
+</html>
