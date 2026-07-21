@@ -29,6 +29,10 @@ public record HarnessProperties(String baseUrl, String dataDir) {
         return Path.of(dataDir).resolve("sp-credential.p12");
     }
 
+    public Path idpMetadataPath() {
+        return Path.of(dataDir).resolve("idp-metadata.xml");
+    }
+
     private static String normalize(String url) {
         return url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
     }

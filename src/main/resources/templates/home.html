@@ -17,5 +17,35 @@
     <h2>SP Metadata</h2>
     <a th:href="${spMetadataUrl}">Export SP Metadata</a>
 </section>
+
+<section>
+    <h2>IdP</h2>
+    <div th:if="${importError}" th:text="'Import failed: ' + ${importError}">import error</div>
+    <div th:if="${importResult}" th:text="'Imported IdP: ' + ${importResult.entityId()}">import success</div>
+
+    <div th:if="${currentIdp}">
+        <p>Current IdP entity ID: <code th:text="${currentIdp.entityId()}">idpEntityId</code></p>
+        <p>SSO location: <code th:text="${currentIdp.singleSignOnServiceLocation()}">ssoLocation</code></p>
+        <p th:if="${currentIdp.singleLogoutServiceLocation()}">
+            SLO location: <code th:text="${currentIdp.singleLogoutServiceLocation()}">sloLocation</code>
+        </p>
+    </div>
+    <div th:unless="${currentIdp}">
+        <p>No IdP configured yet.</p>
+    </div>
+
+    <h3>Import IdP Metadata</h3>
+    <form method="post" action="/idp-metadata" enctype="multipart/form-data">
+        <p>
+            <label for="file">Upload a file:</label>
+            <input type="file" id="file" name="file"/>
+        </p>
+        <p>
+            <label for="metadataText">…or paste XML:</label><br/>
+            <textarea id="metadataText" name="metadataText" rows="10" cols="80"></textarea>
+        </p>
+        <button type="submit">Import</button>
+    </form>
+</section>
 </body>
 </html>

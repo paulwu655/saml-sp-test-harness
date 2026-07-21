@@ -1,26 +1,16 @@
 package com.keyxentic.samlsptestharness.credential;
 
-import org.bouncycastle.asn1.x500.X500Name;
-import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
-import org.bouncycastle.cert.X509v3CertificateBuilder;
-import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
-import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import com.keyxentic.samlsptestharness.support.TestCertificates;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.OutputStream;
-import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.KeyStore;
-import java.security.SecureRandom;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -64,18 +54,8 @@ class SpCredentialServiceTest {
     }
 
     private X509Certificate writeIndependentlyBuiltKeystore(Path keystorePath) throws Exception {
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-        keyPairGenerator.initialize(2048, new SecureRandom());
-        KeyPair keyPair = keyPairGenerator.generateKeyPair();
-
-        X500Name subject = new X500Name("CN=operator-supplied");
-        Instant notBefore = Instant.now();
-        BigInteger serial = new BigInteger(128, new SecureRandom());
-        SubjectPublicKeyInfo publicKeyInfo = SubjectPublicKeyInfo.getInstance(keyPair.getPublic().getEncoded());
-        X509v3CertificateBuilder builder = new X509v3CertificateBuilder(subject, serial,
-                Date.from(notBefore), Date.from(notBefore.plus(Duration.ofDays(30))), subject, publicKeyInfo);
-        X509Certificate certificate = new JcaX509CertificateConverter().getCertificate(
-                builder.build(new JcaContentSignerBuilder("SHA256withRSA").build(keyPair.getPrivate())));
+        KeyPair keyPair = TestCertificates.generateRsaKeyPair();
+        X509Certificate certificate = TestCertificates.selfSigned(keyPair, "CN=operator-supplied");
 
         Files.createDirectories(keystorePath.getParent());
         KeyStore keyStore = KeyStore.getInstance("PKCS12");

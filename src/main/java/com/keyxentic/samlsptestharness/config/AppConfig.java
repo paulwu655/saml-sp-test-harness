@@ -3,6 +3,9 @@ package com.keyxentic.samlsptestharness.config;
 import com.keyxentic.samlsptestharness.credential.SpCredential;
 import com.keyxentic.samlsptestharness.credential.SpCredentialService;
 import com.keyxentic.samlsptestharness.idp.HarnessSamlRegistrations;
+import com.keyxentic.samlsptestharness.idp.IdpMetadataImportService;
+import com.keyxentic.samlsptestharness.idp.IdpRegistrationStore;
+import com.keyxentic.samlsptestharness.idp.SamlRegistrationFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,8 +26,26 @@ public class AppConfig {
     }
 
     @Bean
+    public IdpRegistrationStore idpRegistrationStore(HarnessProperties properties) {
+        return new IdpRegistrationStore(properties.idpMetadataPath());
+    }
+
+    @Bean
+    public SamlRegistrationFactory samlRegistrationFactory() {
+        return new SamlRegistrationFactory();
+    }
+
+    @Bean
     public RelyingPartyRegistrationRepository samlRegistrations(
-            HarnessProperties properties, SpCredential spCredential) {
-        return new HarnessSamlRegistrations(properties, spCredential);
+            HarnessProperties properties, SpCredential spCredential,
+            IdpRegistrationStore idpRegistrationStore, SamlRegistrationFactory registrationFactory) {
+        return new HarnessSamlRegistrations(properties, spCredential, idpRegistrationStore, registrationFactory);
+    }
+
+    @Bean
+    public IdpMetadataImportService idpMetadataImportService(
+            HarnessProperties properties, SpCredential spCredential,
+            IdpRegistrationStore idpRegistrationStore, SamlRegistrationFactory registrationFactory) {
+        return new IdpMetadataImportService(properties, spCredential, idpRegistrationStore, registrationFactory);
     }
 }
