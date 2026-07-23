@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <title>SAML SP Test Harness</title>
+    <link rel="stylesheet" href="/css/style.css"/>
 </head>
 <body>
 <h1>SAML SP Test Harness</h1>
@@ -15,12 +16,12 @@
 
 <section>
     <h2>SP Metadata</h2>
-    <a th:href="${spMetadataUrl}">Export SP Metadata</a>
+    <a class="button" th:href="${spMetadataUrl}">Export SP Metadata</a>
 </section>
 
 <section>
     <h2>IdP</h2>
-    <div th:if="${importError}" th:text="'Import failed: ' + ${importError}">import error</div>
+    <div class="fail" th:if="${importError}" th:text="'Import failed: ' + ${importError}">import error</div>
     <div th:if="${importResult}" th:text="'Imported IdP: ' + ${importResult.entityId()}">import success</div>
 
     <div th:if="${currentIdp}">
@@ -50,7 +51,7 @@
 
 <section th:if="${currentIdp}">
     <h2>Login Test</h2>
-    <a href="/saml2/authenticate/harness">Start Login Test</a>
+    <a class="button" href="/saml2/authenticate/harness">Start Login Test</a>
 </section>
 </body>
 </html>

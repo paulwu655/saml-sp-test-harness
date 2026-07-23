@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8"/>
     <title>Login Test Result</title>
+    <link rel="stylesheet" href="/css/style.css"/>
 </head>
 <body>
 <h1>Login Test Result</h1>
 
-<p th:text="${result.success()} ? 'Result: success' : 'Result: failed'">Result</p>
-<p th:if="${result.failureMessage()}" th:text="${result.failureMessage()}">failure message</p>
+<p th:classappend="${result.success()} ? '' : 'fail'" th:text="${result.success()} ? 'Result: success' : 'Result: failed'">Result</p>
+<p class="fail" th:if="${result.failureMessage()}" th:text="${result.failureMessage()}">failure message</p>
 
 <section>
     <h2>Validation</h2>
-    <p th:text="'Signature: ' + (${result.signatureValidation().isFailed()} ? 'fail' : (${result.signatureValidation().status().name()} == 'PASSED' ? 'pass' : 'not evaluated'))">signature</p>
-    <p th:text="'Time validity: ' + (${result.timeValidityValidation().isFailed()} ? 'fail' : (${result.timeValidityValidation().status().name()} == 'PASSED' ? 'pass' : 'not evaluated'))">time validity</p>
+    <p th:classappend="${result.signatureValidation().isFailed()} ? 'fail' : ''" th:text="'Signature: ' + (${result.signatureValidation().isFailed()} ? 'fail' : (${result.signatureValidation().status().name()} == 'PASSED' ? 'pass' : 'not evaluated'))">signature</p>
+    <p th:classappend="${result.timeValidityValidation().isFailed()} ? 'fail' : ''" th:text="'Time validity: ' + (${result.timeValidityValidation().isFailed()} ? 'fail' : (${result.timeValidityValidation().status().name()} == 'PASSED' ? 'pass' : 'not evaluated'))">time validity</p>
 </section>
 
 <section th:if="${result.success()}">
