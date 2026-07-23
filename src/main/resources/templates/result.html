@@ -2,12 +2,16 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="theme-color" content="#000000"/>
     <title>Login Test Result</title>
     <link rel="stylesheet" href="/css/style.css"/>
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
 <h1>Login Test Result</h1>
 
+<main id="main">
 <p th:classappend="${result.success()} ? '' : 'fail'" th:text="${result.success()} ? 'Result: success' : 'Result: failed'">Result</p>
 <p class="fail" th:if="${result.failureMessage()}" th:text="${result.failureMessage()}">failure message</p>
 
@@ -19,25 +23,39 @@
 
 <section th:if="${result.success()}">
     <h2>Identity</h2>
-    <p>NameID: <code th:text="${result.nameId()}">nameId</code></p>
-    <p th:if="${result.nameIdFormat()}">Format: <code th:text="${result.nameIdFormat()}">format</code></p>
+    <p>NameID: <code translate="no" th:text="${result.nameId()}">nameId</code></p>
+    <p th:if="${result.nameIdFormat()}">Format: <code translate="no" th:text="${result.nameIdFormat()}">format</code></p>
 
     <h2>Attributes</h2>
-    <ul>
+    <ul th:if="${not #maps.isEmpty(result.attributes())}">
         <li th:each="entry : ${result.attributes()}">
             <span th:text="${entry.key}">name</span>: <span th:text="${entry.value}">value</span>
         </li>
     </ul>
+    <p class="muted" th:if="${#maps.isEmpty(result.attributes())}">No attributes returned.</p>
 </section>
 
 <section th:if="${result.rawResponseXml()}">
     <h2>Raw Response XML</h2>
     <details>
         <summary>Show raw XML</summary>
-        <pre th:text="${result.rawResponseXml()}">raw xml</pre>
+        <div th:if="${result.rawResponseXmlFormatted()}" class="tabs">
+            <input type="radio" name="xml-view" id="tab-formatted" checked="checked"/>
+            <label for="tab-formatted">Formatted</label>
+            <input type="radio" name="xml-view" id="tab-raw"/>
+            <label for="tab-raw">Raw</label>
+            <div class="tab-panel" id="panel-formatted">
+                <pre translate="no" th:text="${result.rawResponseXmlFormatted()}">formatted xml</pre>
+            </div>
+            <div class="tab-panel" id="panel-raw">
+                <pre translate="no" th:text="${result.rawResponseXml()}">raw xml</pre>
+            </div>
+        </div>
+        <pre th:unless="${result.rawResponseXmlFormatted()}" translate="no" th:text="${result.rawResponseXml()}">raw xml</pre>
     </details>
 </section>
 
 <p><a href="/">Back</a></p>
+</main>
 </body>
 </html>

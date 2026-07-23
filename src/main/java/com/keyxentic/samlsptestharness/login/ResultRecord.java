@@ -15,16 +15,17 @@ public record ResultRecord(
         ValidationOutcome timeValidityValidation,
         Map<String, List<Object>> attributes,
         String rawResponseXml,
+        String rawResponseXmlFormatted,
         String failureMessage) {
 
     public static ResultRecord success(String nameId, String nameIdFormat, Map<String, List<Object>> attributes, String rawResponseXml) {
         return new ResultRecord(true, nameId, nameIdFormat, ValidationOutcome.passed(), ValidationOutcome.passed(),
-                attributes, rawResponseXml, null);
+                attributes, rawResponseXml, XmlPrettyPrinter.prettyPrint(rawResponseXml), null);
     }
 
     public static ResultRecord failure(ValidationOutcome signatureValidation, ValidationOutcome timeValidityValidation,
                                         String rawResponseXml, String failureMessage) {
         return new ResultRecord(false, null, null, signatureValidation, timeValidityValidation,
-                Map.of(), rawResponseXml, failureMessage);
+                Map.of(), rawResponseXml, XmlPrettyPrinter.prettyPrint(rawResponseXml), failureMessage);
     }
 }

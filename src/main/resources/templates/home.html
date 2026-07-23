@@ -2,16 +2,20 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="theme-color" content="#000000"/>
     <title>SAML SP Test Harness</title>
     <link rel="stylesheet" href="/css/style.css"/>
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
 <h1>SAML SP Test Harness</h1>
 
+<main id="main">
 <section>
-    <h2>SP identity</h2>
-    <p>Entity ID: <code th:text="${entityId}">entityId</code></p>
-    <p>ACS URL: <code th:text="${acsUrl}">acsUrl</code> — this also accepts IdP-initiated logins.</p>
+    <h2>SP Identity</h2>
+    <p>Entity ID: <code translate="no" th:text="${entityId}">entityId</code></p>
+    <p>ACS URL: <code translate="no" th:text="${acsUrl}">acsUrl</code> — this also accepts IdP-initiated logins.</p>
 </section>
 
 <section>
@@ -25,25 +29,28 @@
     <div th:if="${importResult}" th:text="'Imported IdP: ' + ${importResult.entityId()}">import success</div>
 
     <div th:if="${currentIdp}">
-        <p>Current IdP entity ID: <code th:text="${currentIdp.entityId()}">idpEntityId</code></p>
-        <p>SSO location: <code th:text="${currentIdp.singleSignOnServiceLocation()}">ssoLocation</code></p>
+        <p>Current IdP entity ID: <code translate="no" th:text="${currentIdp.entityId()}">idpEntityId</code></p>
+        <p>SSO location: <code translate="no" th:text="${currentIdp.singleSignOnServiceLocation()}">ssoLocation</code></p>
         <p th:if="${currentIdp.singleLogoutServiceLocation()}">
-            SLO location: <code th:text="${currentIdp.singleLogoutServiceLocation()}">sloLocation</code>
+            SLO location: <code translate="no" th:text="${currentIdp.singleLogoutServiceLocation()}">sloLocation</code>
         </p>
     </div>
     <div th:unless="${currentIdp}">
-        <p>No IdP configured yet.</p>
+        <p class="muted">No IdP configured yet.</p>
     </div>
 
     <h3>Import IdP Metadata</h3>
-    <form method="post" action="/idp-metadata" enctype="multipart/form-data">
+    <form id="idp-metadata-form" method="post" action="/idp-metadata" enctype="multipart/form-data"
+          th:attr="data-confirm-replace=${currentIdp} ? 'This replaces the currently configured IdP — it cannot be undone. Continue?' : null">
         <p>
             <label for="file">Upload a file:</label>
-            <input type="file" id="file" name="file"/>
+            <input type="file" id="file" name="file" autocomplete="off"/>
         </p>
         <p>
             <label for="metadataText">…or paste XML:</label><br/>
-            <textarea id="metadataText" name="metadataText" rows="10" cols="80"></textarea>
+            <textarea id="metadataText" name="metadataText" rows="10" cols="80"
+                      spellcheck="false" autocomplete="off"
+                      placeholder="&lt;EntityDescriptor entityID=&quot;…&quot;&gt;…"></textarea>
         </p>
         <button type="submit">Import</button>
     </form>
@@ -53,5 +60,24 @@
     <h2>Login Test</h2>
     <a class="button" href="/saml2/authenticate/harness">Start Login Test</a>
 </section>
+</main>
+
+<script th:inline="none">
+    var idpMetadataForm = document.getElementById('idp-metadata-form');
+    if (idpMetadataForm) {
+        idpMetadataForm.addEventListener('submit', function (event) {
+            var message = idpMetadataForm.getAttribute('data-confirm-replace');
+            if (message && !window.confirm(message)) {
+                event.preventDefault();
+                return;
+            }
+            var submitButton = idpMetadataForm.querySelector('button[type="submit"]');
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.textContent = 'Importing…';
+            }
+        });
+    }
+</script>
 </body>
 </html>
