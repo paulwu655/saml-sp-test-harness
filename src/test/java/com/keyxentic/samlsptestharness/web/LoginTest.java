@@ -13,11 +13,14 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
+import java.util.Base64;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -119,5 +122,24 @@ class LoginTest {
         mockMvc.perform(post("/login/saml2/sso/harness").param("SAMLResponse", samlResponse))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Result: failed")));
+    }
+
+    @Test
+    void aNonBase64ResponseProducesAFailedResultRecordWithoutAStackTrace() throws Exception {
+        mockMvc.perform(post("/login/saml2/sso/harness").param("SAMLResponse", "not-valid-base64!!!"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Result: failed")))
+                .andExpect(content().string(not(containsString("Raw Response XML"))));
+    }
+
+    @Test
+    void aWellFormedButNonSamlResponseProducesAFailedResultRecordWithoutAStackTrace() throws Exception {
+        String notASamlResponse = Base64.getEncoder().encodeToString(
+                "<not-a-saml-response>just some xml</not-a-saml-response>".getBytes(StandardCharsets.UTF_8));
+
+        mockMvc.perform(post("/login/saml2/sso/harness").param("SAMLResponse", notASamlResponse))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Result: failed")))
+                .andExpect(content().string(containsString("not-a-saml-response")));
     }
 }

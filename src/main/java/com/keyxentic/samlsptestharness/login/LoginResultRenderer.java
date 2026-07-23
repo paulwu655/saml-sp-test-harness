@@ -36,6 +36,11 @@ public class LoginResultRenderer {
         if (samlResponse == null) {
             return null;
         }
-        return new String(Base64.getDecoder().decode(samlResponse), java.nio.charset.StandardCharsets.UTF_8);
+        try {
+            return new String(Base64.getDecoder().decode(samlResponse), java.nio.charset.StandardCharsets.UTF_8);
+        } catch (IllegalArgumentException e) {
+            // Not valid Base64 at all — there's no raw XML to corroborate the failure with.
+            return null;
+        }
     }
 }
