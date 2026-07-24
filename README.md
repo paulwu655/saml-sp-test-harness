@@ -64,6 +64,7 @@ Domain vocabulary (SP, IdP, IdP Metadata, SP Metadata, `BASE_URL`, SP Credential
 - No login is required to use the harness's UI or API — this is a deliberate scope decision for a disposable, single-user test tool, not an oversight. See `docs/adr/0003-no-access-control.md`. **Do not deploy this on a network reachable by untrusted parties.**
 - State (the current IdP Registration and the SP Credential) is file/volume-based — there is no database.
 - Further design background lives in `docs/adr/`.
+- Moving this to another machine? See [`DEPLOY.md`](./DEPLOY.md).
 
 ## Development
 
