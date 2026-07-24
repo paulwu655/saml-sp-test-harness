@@ -16,23 +16,27 @@ Domain vocabulary (SP, IdP, IdP Metadata, SP Metadata, `BASE_URL`, SP Credential
 1. **Configure `BASE_URL`**
 
    ```bash
-   cp .env.example .env
+   cp harness.env.example harness.env
    ```
 
-   Edit `.env` and set `BASE_URL` to a URL the IdP can actually reach back to. This single value derives the SP's entityId, ACS URL, and SLO URL — everything else is optional.
+   Edit `harness.env` and set `BASE_URL` to a URL the IdP can actually reach back to. This single value derives the SP's entityId, ACS URL, and SLO URL — everything else is optional.
 
    - Testing against an IdP on the same machine/network (e.g. a local Keycloak): use whatever host/port the IdP can resolve.
    - Testing against an external IdP (Okta, Azure AD, Keyper, ...): `localhost` won't work — use a tunnel URL instead, e.g. `BASE_URL=https://xxxx.ngrok.io`.
 
    `PORT` only controls the host-side port mapping; the container always listens on `8080` internally.
 
+   The env file is deliberately named `harness.env`, not `.env` — Compose only auto-loads a file literally named `.env`, and this repo may end up living alongside other `docker-compose.yml` projects that each want their own env file without colliding. Because of that, every `docker compose` command below needs `--env-file harness.env` explicitly; without it, Compose will refuse to start (`BASE_URL` has no default).
+
 2. **Start the harness**
 
    ```bash
-   docker compose up --build
+   docker compose --env-file harness.env up --build
    ```
 
-   On first boot, an SP Credential (RSA keypair + self-signed certificate) is generated automatically and persisted to the `harness-data` volume at `sp-credential.p12`. Subsequent restarts reuse the same credential — the SP Metadata you hand to the IdP stays valid across restarts. To supply your own credential instead, place a PKCS12 keystore at that path (alias `sp`, password `sp-credential`) in the volume before first boot; the harness loads it instead of generating a new one.
+   On first boot, an SP Credential (RSA keypair + self-signed certificate) is generated automatically and persisted at `sp-credential.p12`, alongside the imported IdP Metadata. Subsequent restarts reuse the same credential — the SP Metadata you hand to the IdP stays valid across restarts. To supply your own credential instead, place a PKCS12 keystore at that path (alias `sp`, password `sp-credential`) before first boot; the harness loads it instead of generating a new one.
+
+   By default this state lives in a Docker-managed named volume (`harness-data`), which isn't a path you can point at directly on the host. To control (or migrate) exactly where it lives on disk, set `DATA_PATH` in `harness.env` to an absolute host path instead — the directory is created automatically on first boot. To move an existing named volume's contents into that path first: `docker run --rm -v harness-data:/from -v /your/chosen/path:/to alpine sh -c "cp -a /from/. /to/"`.
 
 3. **Open the UI**
 

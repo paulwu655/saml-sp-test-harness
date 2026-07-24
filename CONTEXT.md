@@ -23,7 +23,7 @@ The XML document this harness generates describing its own entityId, ACS endpoin
 The single environment variable that anchors this SP's identity — its entityId, ACS URL, and SLO URL are all derived from it. Must be a URL the IdP can actually reach back to (a real domain, or a tunneling URL like ngrok for local testing).
 
 **SP Credential**:
-The RSA key pair and self-signed certificate this SP uses to sign AuthnRequests/LogoutRequests. Generated automatically on first boot and persisted to the mounted volume thereafter; can be overridden by supplying a credential via `.env`/volume instead. Never exposed for download through the UI.
+The RSA key pair and self-signed certificate this SP uses to sign AuthnRequests/LogoutRequests. Generated automatically on first boot and persisted to the mounted volume thereafter; can be overridden by placing a credential in that volume instead. Never exposed for download through the UI.
 
 **Login Test**:
 A full SP-initiated or IdP-initiated SSO round trip against the currently configured IdP, ending in a Result Record. This is the harness's core function — metadata exchange alone does not validate that a login actually works.

@@ -2,14 +2,17 @@ services:
   saml-sp-test-harness:
     build: .
     ports:
-      # PORT (from .env) only controls the host-side port; the container always listens on 8080.
+      # PORT (from harness.env) only controls the host-side port; the container always listens on 8080.
       - "${PORT:-8080}:8080"
     environment:
-      BASE_URL: "${BASE_URL:?Set BASE_URL in .env to a URL your IdP can reach back to}"
-      # DATA_DIR is intentionally not driven by .env: it must match the volume mount below.
+      BASE_URL: "${BASE_URL:?Set BASE_URL in harness.env to a URL your IdP can reach back to}"
+      # DATA_DIR is intentionally not driven by harness.env: it must match the volume mount below.
       DATA_DIR: "/data"
     volumes:
-      - harness-data:/data
+      # DATA_PATH (from harness.env), if set to an absolute host path, bind-mounts that
+      # directory instead — lets you control/migrate exactly where state lives on disk.
+      # Left unset, this falls back to the Docker-managed named volume below.
+      - "${DATA_PATH:-harness-data}:/data"
 
 volumes:
   harness-data:
